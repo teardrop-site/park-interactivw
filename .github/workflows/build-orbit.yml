@@ -1,0 +1,76 @@
+name: Restore and publish original ORBIT
+
+on:
+  push:
+    paths:
+      - "orbit-archive/**"
+      - "orbit-source/**"
+      - ".github/workflows/build-orbit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-orbit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PARK
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Restore original source with checksum verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f orbit-source/src/components/OrbitExperience.jsx ]; then
+            mkdir -p orbit-source
+            cat orbit-archive/0*.b64 | base64 --decode > /tmp/orbit-source.tar.xz
+            echo "191112a6f73a30d3d831eb0a0869070e7f2499115e8c14d94a992041d9b5148d  /tmp/orbit-source.tar.xz" | sha256sum --check
+            tar -xJf /tmp/orbit-source.tar.xz -C orbit-source
+          fi
+          test -f orbit-source/src/components/OrbitExperience.jsx
+
+      - name: Prepare isolated subpath build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir .orbit-build
+          cp -a orbit-source/. .orbit-build/
+          cat > .orbit-build/astro.config.mjs <<'EOF'
+          import { defineConfig } from 'astro/config';
+          import react from '@astrojs/react';
+          export default defineConfig({
+            integrations: [react()],
+            site: 'https://teardrop-site.github.io',
+            base: '/park-interactivw/orbit/'
+          });
+          EOF
+
+      - name: Install and build ORBIT
+        working-directory: .orbit-build
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Publish original work under orbit/
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf orbit
+          mkdir -p orbit
+          cp -a .orbit-build/dist/. orbit/
+          touch .nojekyll
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add orbit-source orbit .nojekyll
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git commit -m "Publish original ORBIT source and compiled standalone experience"
+          git push origin HEAD:main
