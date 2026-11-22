@@ -1,0 +1,703 @@
+﻿:root {
+  color-scheme: dark;
+  background: #000005;
+
+  font-family:
+    "Yu Mincho",
+    "Hiragino Mincho ProN",
+    "Noto Serif JP",
+    serif;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html {
+  margin: 0;
+  background: #000005;
+
+  overscroll-behavior-y:
+    none;
+}
+
+
+body {
+  margin: 0;
+
+  min-width: 100%;
+
+  overflow-x: hidden;
+
+  background: #000005;
+
+  color: #fff;
+}
+
+
+/* =========================================================
+   SPACE
+========================================================= */
+
+.orbit-shell {
+  position: relative;
+
+  height: 620svh;
+
+  background: #000005;
+}
+
+
+.orbit-stage {
+  position: sticky;
+
+  top: 0;
+
+  width: 100%;
+  height: 100svh;
+
+  overflow: hidden;
+
+  background: #000005;
+}
+
+
+.orbit-layer {
+  position: absolute;
+
+  inset: 0;
+}
+
+
+.orbit-layer canvas {
+  display: block;
+
+  width: 100% !important;
+  height: 100% !important;
+}
+
+
+.orbit-layer--back {
+  z-index: 1;
+}
+
+
+.orbit-layer--front {
+  z-index: 5;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.orbit-copy {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 3;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    100px
+    clamp(
+      26px,
+      8vw,
+      140px
+    );
+
+  pointer-events: none;
+}
+
+
+.orbit-copy-inner {
+  width:
+    min(
+      1120px,
+      100%
+    );
+
+  text-align: center;
+}
+
+
+.orbit-chapter-name {
+  display: block;
+
+  margin-bottom: 28px;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  letter-spacing: .34em;
+
+  color:
+    rgba(
+      191,
+      215,
+      241,
+      .46
+    );
+}
+
+
+.orbit-text {
+  margin: 0;
+
+  font-family:
+    "Yu Mincho",
+    "Hiragino Mincho ProN",
+    "Noto Serif JP",
+    serif;
+
+  font-size:
+    clamp(
+      31px,
+      4.8vw,
+      74px
+    );
+
+  font-weight: 500;
+
+  line-height: 1.78;
+
+  letter-spacing: .045em;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      .985
+    );
+
+  text-shadow:
+    0 0 18px
+      rgba(
+        166,
+        211,
+        255,
+        .24
+      ),
+    0 0 60px
+      rgba(
+        113,
+        154,
+        255,
+        .12
+      );
+
+  animation:
+    orbitCopyIn
+    1.05s
+    cubic-bezier(
+      .16,
+      .74,
+      .18,
+      1
+    )
+    both;
+}
+
+
+.orbit-text--final {
+  font-size:
+    clamp(
+      34px,
+      5.5vw,
+      82px
+    );
+
+  letter-spacing: .065em;
+}
+
+
+@keyframes orbitCopyIn {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(
+        28px
+      );
+
+    filter:
+      blur(
+        3px
+      );
+  }
+
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(
+        0
+      );
+
+    filter:
+      blur(
+        0
+      );
+  }
+
+}
+
+
+/* =========================================================
+   DISTANCE CHAPTER
+========================================================= */
+
+.orbit-shell[
+  data-chapter="2"
+]
+.orbit-text {
+
+  animation:
+    orbitDistance
+    .85s
+    cubic-bezier(
+      .12,
+      .84,
+      .18,
+      1
+    )
+    both;
+
+}
+
+
+@keyframes orbitDistance {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(.72);
+
+    letter-spacing:
+      .20em;
+  }
+
+
+  100% {
+    opacity: 1;
+
+    transform:
+      scale(1);
+
+    letter-spacing:
+      .045em;
+  }
+
+}
+
+
+/* =========================================================
+   ENTER CHAPTER
+========================================================= */
+
+.orbit-shell[
+  data-chapter="3"
+]
+.orbit-text {
+
+  text-shadow:
+    0 0 18px
+      rgba(
+        255,
+        255,
+        255,
+        .26
+      ),
+    0 0 80px
+      rgba(
+        255,
+        144,
+        206,
+        .16
+      );
+
+}
+
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+.orbit-vignette {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 6;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 0%,
+      transparent 43%,
+      rgba(
+        0,
+        0,
+        5,
+        .04
+      ) 58%,
+      rgba(
+        0,
+        0,
+        5,
+        .56
+      ) 110%
+    );
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.orbit-meta {
+  position: absolute;
+
+  top:
+    clamp(
+      20px,
+      3vw,
+      36px
+    );
+
+  left:
+    clamp(
+      22px,
+      4vw,
+      56px
+    );
+
+  right:
+    clamp(
+      22px,
+      4vw,
+      56px
+    );
+
+  z-index: 7;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  pointer-events: none;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  letter-spacing: .30em;
+
+  color:
+    rgba(
+      238,
+      246,
+      255,
+      .48
+    );
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.orbit-footer {
+  position: absolute;
+
+  left:
+    clamp(
+      22px,
+      4vw,
+      56px
+    );
+
+  right:
+    clamp(
+      22px,
+      4vw,
+      56px
+    );
+
+  bottom:
+    clamp(
+      20px,
+      3vw,
+      36px
+    );
+
+  z-index: 7;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  pointer-events: none;
+}
+
+
+.orbit-scroll {
+  width: 58px;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  letter-spacing: .28em;
+
+  color:
+    rgba(
+      238,
+      246,
+      255,
+      .38
+    );
+
+  animation:
+    orbitPulse
+    2.1s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes orbitPulse {
+
+  0%,
+  100% {
+    opacity: .20;
+  }
+
+
+  50% {
+    opacity: .92;
+  }
+
+}
+
+
+.orbit-progress {
+  position: relative;
+
+  flex: 1;
+
+  height: 1px;
+
+  overflow: hidden;
+
+  background:
+    rgba(
+      225,
+      238,
+      255,
+      .11
+    );
+}
+
+
+.orbit-progress span {
+  display: block;
+
+  width: 0;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(
+        111,
+        208,
+        255,
+        .92
+      ),
+      rgba(
+        255,
+        143,
+        199,
+        .92
+      ),
+      rgba(
+        198,
+        167,
+        255,
+        .92
+      )
+    );
+
+  box-shadow:
+    0 0 16px
+      rgba(
+        170,
+        210,
+        255,
+        .56
+      );
+}
+
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+.orbit-shell[
+  data-final="true"
+]
+.orbit-meta {
+
+  color:
+    rgba(
+      238,
+      246,
+      255,
+      .24
+    );
+
+}
+
+
+.orbit-shell[
+  data-final="true"
+]
+.orbit-progress {
+
+  opacity: .45;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+  max-width: 640px
+) {
+
+  .orbit-shell {
+    height: 660svh;
+  }
+
+
+  .orbit-copy {
+    padding:
+      88px
+      24px
+      105px;
+  }
+
+
+  .orbit-chapter-name {
+    margin-bottom: 22px;
+
+    font-size: 7px;
+  }
+
+
+  .orbit-text {
+    font-size:
+      clamp(
+        27px,
+        8.1vw,
+        43px
+      );
+
+    line-height: 1.87;
+
+    letter-spacing: .025em;
+  }
+
+
+  .orbit-text--final {
+    font-size:
+      clamp(
+        29px,
+        8.7vw,
+        47px
+      );
+  }
+
+
+  .orbit-meta {
+    font-size: 8px;
+
+    letter-spacing: .21em;
+  }
+
+
+  .orbit-footer {
+    gap: 12px;
+  }
+
+
+  .orbit-scroll {
+    width: 48px;
+
+    font-size: 7px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .orbit-text,
+  .orbit-scroll {
+
+    animation:
+      none !important;
+
+  }
+
+}
