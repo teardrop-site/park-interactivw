@@ -6,7 +6,7 @@
 - [ORBIT, original-source GitHub edition](https://teardrop-site.github.io/park-interactivw/orbit/)
 - [THE UNWRITTEN, original host](https://dream.stilloperable.studio/the-unwritten/)
 - [DREAM KEEP DREAMIN', GitHub edition](https://teardrop-site.github.io/park-interactivw/city/)
-- [ALMOST / ためらいの地図 (original interactive cartography)](https://teardrop-site.github.io/park-interactivw/almost/)
+- [ALMOST / ためらいの地図 (original interactive cartography)](https://teardrop-site.github.io/park-interactivw/almost.html)
 
 ## New original work
 
