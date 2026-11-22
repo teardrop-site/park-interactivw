@@ -1,0 +1,65 @@
+name: Publish PARK to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Restore and publish original ORBIT
+      - Restore and publish DREAM KEEP DREAMIN'
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: park-github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out latest main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Validate and stage only public web files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s almost.html
+          test -s almost/index.html
+          test -s orbit/index.html
+          test -s city/index.html
+          mkdir -p _site
+          cp index.html almost.html works.json _site/
+          cp -R almost orbit city _site/
+          touch _site/.nojekyll
+          # Do not publish the source archives or workflows.
+          test -s _site/almost.html
+          test -s _site/almost/index.html
+          test -s _site/orbit/index.html
+          test -s _site/city/index.html
+          echo "All PARK entry points are present."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload PARK site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy PARK site
+        id: deployment
+        uses: actions/deploy-pages@v4
