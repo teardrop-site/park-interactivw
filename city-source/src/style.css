@@ -1,0 +1,845 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #081522;
+}
+
+body {
+  color: #f1ece2;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+#world {
+  position: fixed;
+  inset: 0;
+}
+
+#world canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#world::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.03),
+      transparent 30%,
+      transparent 75%,
+      rgba(0, 0, 0, 0.18)
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(0, 0, 0, 0.1) 88%,
+      rgba(0, 0, 0, 0.28) 130%
+    );
+}
+
+/* =========================================================
+   ARRIVAL
+========================================================= */
+
+.arrival {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at 50% 52%,
+      rgba(18, 31, 44, 0.68),
+      rgba(4, 10, 17, 0.94)
+    );
+
+  backdrop-filter: blur(5px);
+
+  transition:
+    opacity 1.5s ease,
+    backdrop-filter 1.5s ease;
+}
+
+.arrival.leaving {
+  opacity: 0;
+  backdrop-filter: blur(0);
+  pointer-events: none;
+}
+
+.arrival__small {
+  margin-bottom: 22px;
+
+  color:
+    rgba(
+      239,
+      234,
+      224,
+      0.52
+    );
+
+  font-size: 9px;
+  letter-spacing: 0.36em;
+}
+
+.arrival__title {
+  color: #f4eee3;
+
+  font-size:
+    clamp(
+      29px,
+      4.3vw,
+      64px
+    );
+
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.arrival__sub {
+  margin-top: 14px;
+
+  color:
+    rgba(
+      239,
+      234,
+      224,
+      0.48
+    );
+
+  font-size: 8px;
+  letter-spacing: 0.27em;
+}
+
+.arrival__notice {
+  margin-top: 35px;
+
+  color:
+    rgba(
+      242,
+      224,
+      193,
+      0.72
+    );
+
+  font-size: 8px;
+  line-height: 1.7;
+  letter-spacing: 0.23em;
+  text-align: center;
+}
+
+#enter {
+  margin-top: 32px;
+
+  padding:
+    14px
+    22px
+    13px;
+
+  border:
+    1px solid
+    rgba(
+      239,
+      234,
+      224,
+      0.55
+    );
+
+  background:
+    rgba(
+      239,
+      234,
+      224,
+      0.04
+    );
+
+  color:
+    rgba(
+      249,
+      244,
+      235,
+      0.94
+    );
+
+  font-size: 9px;
+  letter-spacing: 0.24em;
+
+  cursor: pointer;
+
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease;
+}
+
+#enter:hover {
+  color: #111416;
+  background: #eee9df;
+  border-color: #eee9df;
+}
+
+.arrival__controls {
+  margin-top: 31px;
+
+  color:
+    rgba(
+      239,
+      234,
+      224,
+      0.34
+    );
+
+  font-size: 7px;
+  line-height: 1.9;
+  letter-spacing: 0.17em;
+  text-align: center;
+}
+
+/* =========================================================
+   GUIDE
+========================================================= */
+
+#guide {
+  position: fixed;
+
+  top: 22px;
+  left: 50%;
+
+  z-index: 10;
+
+  min-width: 310px;
+
+  padding:
+    10px
+    14px
+    11px;
+
+  transform:
+    translateX(-50%)
+    translateY(-10px);
+
+  border:
+    1px solid
+    rgba(
+      238,
+      232,
+      220,
+      0.15
+    );
+
+  background:
+    rgba(
+      8,
+      14,
+      19,
+      0.58
+    );
+
+  backdrop-filter: blur(10px);
+
+  opacity: 0;
+
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease,
+    border-color 300ms ease,
+    background 300ms ease;
+
+  pointer-events: none;
+}
+
+#guide.visible {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+.guide__label {
+  margin-bottom: 7px;
+
+  color:
+    rgba(
+      239,
+      234,
+      224,
+      0.37
+    );
+
+  font-size: 6px;
+  letter-spacing: 0.28em;
+}
+
+.guide__main {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    1fr
+    auto;
+
+  align-items: center;
+  gap: 12px;
+}
+
+#guide-key {
+  min-width: 28px;
+
+  padding:
+    5px
+    7px;
+
+  border:
+    1px solid
+    rgba(
+      242,
+      237,
+      227,
+      0.32
+    );
+
+  color: #f4eee3;
+
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+#guide-text {
+  color:
+    rgba(
+      244,
+      238,
+      227,
+      0.88
+    );
+
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+#guide-distance {
+  color: #e8b87a;
+
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+#guide.ready {
+  border-color:
+    rgba(
+      223,
+      126,
+      78,
+      0.45
+    );
+
+  background:
+    rgba(
+      36,
+      18,
+      13,
+      0.68
+    );
+}
+
+#guide.ready #guide-key {
+  border-color:
+    rgba(
+      242,
+      215,
+      182,
+      0.7
+    );
+
+  background:
+    rgba(
+      224,
+      111,
+      67,
+      0.23
+    );
+}
+
+#guide.ready #guide-distance {
+  color: #f0d5b2;
+}
+
+/* =========================================================
+   PARK NOTICE
+========================================================= */
+
+#park-notice {
+  position: fixed;
+
+  top: 27px;
+  left: 25px;
+
+  z-index: 8;
+
+  max-width: 240px;
+
+  opacity: 0;
+
+  transform:
+    translateY(-5px);
+
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+
+  pointer-events: none;
+}
+
+#park-notice.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.park-notice__label {
+  margin-bottom: 7px;
+
+  color:
+    rgba(
+      238,
+      232,
+      221,
+      0.32
+    );
+
+  font-size: 6px;
+  letter-spacing: 0.3em;
+}
+
+#notice-text {
+  color:
+    rgba(
+      241,
+      233,
+      219,
+      0.67
+    );
+
+  font-size: 8px;
+  line-height: 1.6;
+  letter-spacing: 0.17em;
+
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
+}
+
+#notice-text.changing {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+.hud {
+  position: fixed;
+
+  left: 26px;
+  right: 26px;
+  bottom: 21px;
+
+  z-index: 5;
+
+  display: flex;
+  justify-content: space-between;
+
+  color:
+    rgba(
+      232,
+      230,
+      224,
+      0.4
+    );
+
+  font-size: 7px;
+  letter-spacing: 0.2em;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   RETICLE
+========================================================= */
+
+.reticle {
+  position: fixed;
+
+  left: 50%;
+  top: 50%;
+
+  z-index: 6;
+
+  width: 4px;
+  height: 4px;
+
+  margin:
+    -2px
+    0
+    0
+    -2px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.5
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(
+      255,
+      255,
+      255,
+      0.16
+    );
+
+  opacity: 0;
+
+  transition:
+    opacity 800ms ease;
+
+  pointer-events: none;
+}
+
+.reticle.visible {
+  opacity: 1;
+}
+
+/* =========================================================
+   MOBILE ACTION
+========================================================= */
+
+#mobile-action {
+  display: none;
+
+  position: fixed;
+
+  left: 50%;
+  bottom: 55px;
+
+  z-index: 12;
+
+  transform:
+    translateX(-50%);
+
+  min-width: 120px;
+
+  padding:
+    14px
+    20px;
+
+  border:
+    1px solid
+    rgba(
+      244,
+      237,
+      226,
+      0.38
+    );
+
+  background:
+    rgba(
+      8,
+      14,
+      20,
+      0.68
+    );
+
+  backdrop-filter: blur(10px);
+
+  color: #f2ece2;
+
+  font-size: 9px;
+  letter-spacing: 0.22em;
+
+  touch-action: none;
+}
+
+/* =========================================================
+   RIDE DISPLAY
+========================================================= */
+
+#ride-display {
+  position: fixed;
+
+  left: 50%;
+  bottom: 45px;
+
+  z-index: 12;
+
+  transform:
+    translateX(-50%)
+    translateY(10px);
+
+  text-align: center;
+
+  opacity: 0;
+
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+
+  pointer-events: none;
+}
+
+#ride-display.visible {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+.ride-display__label {
+  margin-bottom: 8px;
+
+  color:
+    rgba(
+      240,
+      235,
+      226,
+      0.36
+    );
+
+  font-size: 6px;
+  letter-spacing: 0.28em;
+}
+
+#ride-speed {
+  color: #f4eee5;
+
+  font-size:
+    clamp(
+      19px,
+      2.4vw,
+      32px
+    );
+
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* =========================================================
+   NOW
+========================================================= */
+
+#now-flash {
+  position: fixed;
+  inset: 0;
+
+  z-index: 30;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eee8dd;
+  color: #111416;
+
+  font-size:
+    clamp(
+      70px,
+      18vw,
+      260px
+    );
+
+  font-weight: 700;
+  letter-spacing: -0.08em;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transform: scale(1.03);
+
+  transition:
+    opacity 80ms linear,
+    transform 1.5s ease;
+}
+
+#now-flash.visible {
+  opacity: 1;
+}
+
+#now-flash.leaving {
+  opacity: 0;
+  transform: scale(0.16);
+}
+
+/* =========================================================
+   RIDE END
+========================================================= */
+
+#ride-end {
+  position: fixed;
+  inset: 0;
+
+  z-index: 25;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(
+      4,
+      8,
+      12,
+      0.86
+    );
+
+  backdrop-filter: blur(8px);
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 500ms ease;
+}
+
+#ride-end.visible {
+  opacity: 1;
+}
+
+.ride-end__small {
+  margin-bottom: 15px;
+
+  color:
+    rgba(
+      239,
+      233,
+      223,
+      0.4
+    );
+
+  font-size: 8px;
+  letter-spacing: 0.32em;
+}
+
+.ride-end__main {
+  color: #f1ebe0;
+
+  font-size:
+    clamp(
+      26px,
+      5vw,
+      60px
+    );
+
+  letter-spacing: -0.045em;
+}
+
+#ride-count {
+  margin-top: 18px;
+
+  color:
+    rgba(
+      239,
+      233,
+      223,
+      0.38
+    );
+
+  font-size: 8px;
+  letter-spacing: 0.25em;
+}
+
+/* =========================================================
+   SMALL SCREEN
+========================================================= */
+
+@media (max-width: 760px) {
+  .arrival {
+    padding:
+      30px
+      22px;
+  }
+
+  .arrival__title {
+    font-size: 31px;
+  }
+
+  .arrival__controls {
+    display: none;
+  }
+
+  #guide {
+    top: 14px;
+
+    width:
+      calc(
+        100% - 28px
+      );
+
+    min-width: 0;
+  }
+
+  #guide-text {
+    font-size: 8px;
+  }
+
+  #park-notice {
+    top: 84px;
+    left: 16px;
+
+    max-width: 190px;
+  }
+
+  #mobile-action.visible {
+    display: block;
+  }
+
+  .hud {
+    left: 15px;
+    right: 15px;
+    bottom: 17px;
+
+    font-size: 6px;
+  }
+
+  .hud > div:first-child {
+    max-width: 65%;
+  }
+
+  #ride-display {
+    bottom: 50px;
+  }
+}
