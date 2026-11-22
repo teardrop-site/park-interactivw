@@ -10,7 +10,7 @@
 
 ## New original work
 
-`almost/index.html` is a self-contained mobile-friendly canvas experiment. Holding on the map creates landforms; selecting islands reveals written field notes. Its drawing data stays in this browser's localStorage and can be exported as PNG. No analytics, external scripts, dependencies, or server-side data collection.
+`almost/index.html` is a self-contained, mobile-friendly canvas experiment, also served as `almost.html`. Hold for 0.8 seconds to create an island, tap an island to read its field note, and tap the water between two or more islands to reveal a geographic relationship between the closest pair. At three islands, a **Route** control becomes available: the visitor's actual island placement determines a shortest-neighbor visiting order, and each press advances a narrative passage along the visible route. At 14 islands, that route connects the full map and returns to its first stop. Placement data stays in the current browser's localStorage, with PNG export. No analytics, external scripts, dependencies, or server-side data collection.
 
 ## Source preservation
 
