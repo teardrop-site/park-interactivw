@@ -25,3 +25,7 @@ The original ORBIT Astro/React/Three.js project is under `orbit-source/`. DREAM 
 Both builds run in isolated temporary build folders. The original source and the existing `dream.stilloperable.studio` host are not modified. The output is committed into `orbit/` and `city/` to be served from the root GitHub Pages deployment. The root `.nojekyll` file enables Astro `_astro` assets.
 
 THE UNWRITTEN still links to its original host until its actual source becomes available.
+
+## GitHub Pages deployment
+
+Publishing is managed by the [Publish PARK to GitHub Pages](.github/workflows/publish-pages.yml) workflow. The repository's Pages source must be set to **GitHub Actions**. A push to `main` rebuilds the public artifact containing the PARK index and original works.
