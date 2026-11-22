@@ -1,22 +1,22 @@
 # PARK / stilloperable
 
-**PARK** is a selection interface for experimental web works.
+**PARK** is the index of interactive web works.
 
 - [PARK](https://teardrop-site.github.io/park-interactivw/)
-- [ORBIT on GitHub Pages](https://teardrop-site.github.io/park-interactivw/orbit/)
-- [Original ORBIT host](https://dream.stilloperable.studio/)
-- [THE UNWRITTEN (original host)](https://dream.stilloperable.studio/the-unwritten/)
+- [ORBIT, original-source GitHub edition](https://teardrop-site.github.io/park-interactivw/orbit/)
+- [THE UNWRITTEN, original host](https://dream.stilloperable.studio/the-unwritten/)
+- [DREAM KEEP DREAMIN', GitHub edition](https://teardrop-site.github.io/park-interactivw/city/)
 
-## ORBIT source and publishing
+## Source preservation
 
-The original ORBIT Astro/React/Three.js source has been restored without rewriting the work, under [orbit-source/](orbit-source/).
+The original ORBIT Astro/React/Three.js project is under `orbit-source/`. DREAM KEEP DREAMIN' uses its original Vite/TypeScript/Three.js project under `city-source/`. Source archives are retained in `orbit-archive/` and `city-archive/` with checksum-verified restoration.
 
-A copy of the original source files is checksum-verified from [orbit-archive/](orbit-archive/), using `.github/workflows/build-orbit.yml`.
+## Automatic publication
 
-The GitHub Actions workflow builds ORBIT using Node 22, adjusts **only the temporary build configuration** to support GitHub Pages' `/park-interactivw/orbit/` subpath, and commits compiled output into [orbit/](orbit/). It leaves the original dream.stilloperable.studio site untouched. The root `.nojekyll` file makes it possible to serve Astro's `_astro` assets on GitHub Pages.
+- `.github/workflows/build-orbit.yml`: build the original ORBIT for `/park-interactivw/orbit/`
+- `.github/workflows/build-city.yml`: build DREAM KEEP DREAMIN' for `/park-interactivw/city/`
+- `index.html`: PARK navigation
 
-To edit the work, modify files in `orbit-source/`. A push to those files triggers a rebuild. The original-source archive is kept as an immutable reference; existing sources are not overwritten on future runs.
+Both builds run in isolated temporary build folders. The original source and the existing `dream.stilloperable.studio` host are not modified. The output is committed into `orbit/` and `city/` to be served from the root GitHub Pages deployment. The root `.nojekyll` file enables Astro `_astro` assets.
 
-## Other works
-
-THE UNWRITTEN currently links to the original host. THE CITY has not yet been published on GitHub; it is deliberately marked as upcoming rather than linked to non-existent code.
+THE UNWRITTEN still links to its original host until its actual source becomes available.
