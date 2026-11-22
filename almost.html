@@ -42,15 +42,18 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
 .entry{border-left:1px solid #6684788b;padding-left:clamp(18px,2vw,34px);min-height:88px}
 .entry h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(23px,2.45vw,38px);font-weight:400;line-height:1.3;letter-spacing:-.045em;margin:0 0 10px}
 .entry p{font-size:12px;line-height:1.85;color:#b8c6b8;margin:0;max-width:440px}
-.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;align-items:center;max-width:270px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch;width:min(290px,100%)}
 .controls button{background:none;border:1px solid #7d9b8a92;color:var(--cream);padding:12px 15px;font-size:10px;letter-spacing:.12em;white-space:nowrap;transition:background .25s,color .25s}
 .controls button:hover{background:var(--cream);color:var(--ground)}
 .controls .create{background:var(--mint);color:var(--ground);border-color:var(--mint);font-weight:700}
 .controls .create:hover{background:var(--gold);border-color:var(--gold)}
+.controls button:disabled{opacity:.42;cursor:default}
+.controls button.route-ready{border-color:#e7b990;color:#e7b990}
+.map-hint{position:absolute;left:22px;bottom:16px;font-size:10px;letter-spacing:.085em;color:#b5d2bd;pointer-events:none;z-index:1;max-width:calc(100% - 55px)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);padding:12px 18px;border:1px solid #718c7b;background:#15312ef0;color:#efe9db;font-size:12px;letter-spacing:.08em;pointer-events:none;opacity:0;transition:opacity .3s,transform .3s;z-index:10}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:920px){.bottom{grid-template-columns:1fr 1.4fr}.controls{grid-column:1/-1;justify-content:flex-start;max-width:none}.map-space{min-height:180px}}
-@media(max-width:600px){.app{min-height:560px}.title{font-size:clamp(59px,15vw,86px);margin-top:10px}.subtitle{font-size:11px;margin-top:14px}.header-right{gap:16px}.counter{font-size:29px}header{padding:22px 19px 19px}.bottom{padding:14px 19px calc(14px + env(safe-area-inset-bottom));gap:13px;grid-template-columns:1fr}.instructions{display:none}.entry{padding-left:15px;min-height:70px}.entry h2{font-size:23px;margin-bottom:4px}.entry p{font-size:11px;line-height:1.6}.entry small{margin-bottom:4px}.controls{grid-column:auto;justify-content:space-between;gap:5px}.controls button{padding:11px 9px;font-size:9px;flex:1}.controls .create{flex:1.3}.map-mark{font-size:8px}.map-help span{font-size:11px}.map-help strong{font-size:32px}}
+@media(max-width:920px){.bottom{grid-template-columns:1fr 1.4fr}.controls{grid-column:1/-1;justify-content:flex-start;max-width:330px}.map-space{min-height:180px}}
+@media(max-width:600px){.app{min-height:560px}.title{font-size:clamp(59px,15vw,86px);margin-top:10px}.subtitle{font-size:11px;margin-top:14px}.header-right{gap:16px}.counter{font-size:29px}header{padding:22px 19px 19px}.bottom{padding:14px 19px calc(14px + env(safe-area-inset-bottom));gap:13px;grid-template-columns:1fr}.instructions{display:none}.entry{padding-left:15px;min-height:70px}.entry h2{font-size:23px;margin-bottom:4px}.entry p{font-size:11px;line-height:1.6}.entry small{margin-bottom:4px}.controls{grid-column:auto;justify-content:space-between;gap:5px;width:100%;max-width:none;grid-template-columns:repeat(2,minmax(0,1fr))}.controls button{padding:11px 9px;font-size:9px;flex:1}.controls .create{flex:1.3}.map-mark{font-size:8px}.map-help span{font-size:11px}.map-help strong{font-size:32px}}
 @media(max-height:720px) and (min-width:700px){.title{font-size:80px}header{padding-block:20px}.bottom{padding-block:18px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
@@ -71,12 +74,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
 <section class="map-space" aria-label="ためらいの地図。画面を長押しすると島ができます">
 <canvas id="map" aria-label="インタラクティブな地図。長押し、または下の島をつくるボタンで操作できます"></canvas>
 <div class="map-mark">UNRECORDED TERRITORIES<br>34° 18′ / 138° 00′<br>NO FIXED SCALE</div>
-<div class="map-help" id="help"><strong>Nothing here yet.</strong><span>画面のどこかで、0.8秒だけ立ち止まる。<br>その場所が地図になる。</span></div>
+<div class="map-help" id="help"><strong>Nothing here yet.</strong><span>画面のどこかで、0.8秒だけ立ち止まる。<br>島が2つできたら、海を触ってみる。</span></div>
+<div class="map-hint" id="mapHint" aria-live="polite">0.8秒の長押しで島を作る</div>
 </section>
 <footer class="bottom">
-<div class="instructions"><small>HOW TO MAKE LAND</small><p>クリック・タッチしたまま0.8秒。<br>現れた島に触れると記録を読めます。<br>ここで生まれる地図は、この端末にだけ残ります。</p></div>
+<div class="instructions"><small>HOW TO READ THE MAP</small><p>長押しで島を作る。島を触ると記録が開く。<br>2つ以上できたら海を短く触る。<br>3つ以上で航路を読み進められます。</p></div>
 <article class="entry" aria-live="polite"><small id="record">FIELD NOTE / 000</small><h2 id="entryTitle">まだどこにも行っていない。</h2><p id="entryBody">移動して、止まる。何もしない時間が長くなるほど、地形が生まれていく。</p></article>
-<div class="controls"><button type="button" class="create" id="add">＋ 島をつくる</button><button type="button" id="export">地図を保存</button><button type="button" id="reset">消去</button></div>
+<div class="controls"><button type="button" class="create" id="add">＋ 島をつくる</button><button type="button" id="route" disabled>航路を読む</button><button type="button" id="export">地図を保存</button><button type="button" id="reset">消去</button></div>
 </footer>
 <div class="toast" id="toast" role="status"></div>
 </main>
@@ -105,7 +109,9 @@ const canvas=document.getElementById('map'),ctx=canvas.getContext('2d',{alpha:fa
 const map=canvas.parentElement,help=document.getElementById('help');
 const count=document.getElementById('count'),record=document.getElementById('record');
 const title=document.getElementById('entryTitle'),body=document.getElementById('entryBody'),toast=document.getElementById('toast');
+const routeButton=document.getElementById('route'),mapHint=document.getElementById('mapHint');
 let islands=[],selected=-1,w=1,h=1,dpr=1,hold=null,pointer={x:-200,y:-200},flashes=[];
+let mode='island',between=null,route=[],routeStep=0;
 let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let toastHandle=0,raf=0;
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
@@ -118,10 +124,25 @@ function notify(message){toast.textContent=message;toast.classList.add('show');c
 function update(){
 count.textContent=String(islands.length).padStart(2,'0');
 help.classList.toggle('hide',islands.length>0);
-if(selected<0||!islands[selected]){
+mapHint.textContent=islands.length<2?'島を2つ作ると、海に文章が現れる':islands.length<3?'海を短く触って、島と島のあいだを読む':islands.length<MAX?'海を触る / 航路を読む / 長押しで島を増やす':'14の島がそろった。あなたの航路を読む';
+if(mode==='sea'&&between&&islands[between[0]]&&islands[between[1]]){
+const a=islands[between[0]],b=islands[between[1]];
+const diffX=(b.x-a.x)*w,diffY=(b.y-a.y)*h;
+const orient=Math.abs(diffX)>Math.abs(diffY)?'東西':'南北';
+const distance=Math.round(Math.hypot(diffX,diffY)/Math.max(1,w)*100);
+record.textContent='BETWEEN / '+String(between[0]+1).padStart(2,'0')+' : '+String(between[1]+1).padStart(2,'0');
+title.textContent='「'+phrases[a.n][0]+'」と「'+phrases[b.n][0]+'」';
+body.textContent='現実では別々だった出来事が、ここでは'+orient+'に並ぶ。2つの距離は地図の幅の約'+distance+'%。あなたが置いた場所によって、この近さになった。';
+}else if(mode==='route'&&route.length>1){
+const a=islands[route[routeStep]],b=islands[route[(routeStep+1)%route.length]];
+const last=routeStep===route.length-1;
+record.textContent=last?'LAST ARRIVAL / '+String(route.length).padStart(2,'0'):'PASSAGE / '+String(routeStep+1).padStart(2,'0')+' OF '+String(route.length).padStart(2,'0');
+title.textContent=last?'出発した場所に戻ってきた。':phrases[a.n][0]+' → '+phrases[b.n][0];
+body.textContent=last?'あなたが置いた島を、すべて通って最初の場所へ戻った。現実では交わらなかった出来事を、いまはひと続きの順序で読むことができる。': '次の場所は「'+phrases[b.n][0]+'」。この順番は文章ではなく、島と島の距離が決めている。';
+}else if(selected<0||!islands[selected]){
 record.textContent='FIELD NOTE / 000';
 title.textContent=islands.length?'地図の中に、まだ続きがある。':'まだどこにも行っていない。';
-body.textContent=islands.length?'島を選んで記録を読む。別の場所で立ち止まれば、土地が増えていく。':'移動して、止まる。何もしない時間が長くなるほど、地形が生まれていく。';
+body.textContent=islands.length?'島を選んで記録を読む。2つ以上あるなら島のあいだの海を短く触ると、別の文章が現れます。':'移動して、止まる。何もしない時間が長くなるほど、地形が生まれていく。';
 }else{
 const v=islands[selected],p=phrases[v.n];
 record.textContent='FIELD NOTE / '+String(selected+1).padStart(3,'0');
@@ -129,6 +150,32 @@ title.textContent=p[0];body.textContent=p[1];
 }
 document.getElementById('add').disabled=islands.length>=MAX;
 document.getElementById('add').textContent=islands.length>=MAX?'MAP COMPLETE':'＋ 島をつくる';
+routeButton.disabled=islands.length<3;
+routeButton.classList.toggle('route-ready',islands.length>=3);
+routeButton.textContent=mode==='route'?'次の区間 →':islands.length>=MAX?'最後の航路を読む':'航路を読む';
+}
+function nearestTwo(x,y){
+return islands.map((v,i)=>({i,d:Math.hypot(v.x*w-x,v.y*h-y)})).sort((a,b)=>a.d-b.d).slice(0,2).map(v=>v.i);
+}
+function readSea(x,y){
+if(islands.length<2)return;
+const pair=nearestTwo(x,y);if(pair.length<2)return;
+between=pair;selected=-1;mode='sea';update();
+}
+function constructRoute(){
+const left=new Set(islands.map((_,i)=>i));
+const result=[],start=0;let last=start;result.push(start);left.delete(start);
+while(left.size){let best=-1,bestDist=Infinity;for(const idx of left){
+const a=islands[last],b=islands[idx],d=Math.hypot((a.x-b.x)*w,(a.y-b.y)*h);
+if(d<bestDist){bestDist=d;best=idx;}
+}result.push(best);left.delete(best);last=best;}
+return result;
+}
+function nextRoute(){
+if(islands.length<3){notify('島が3つできると、航路が生まれます。');return;}
+if(mode!=='route'||route.length!==islands.length){route=constructRoute();routeStep=0;notify('島の距離から、ひとつの航路が生まれました。');}
+else{routeStep=(routeStep+1)%route.length;if(routeStep===0)notify('もう一度、出発点へ。');}
+selected=-1;mode='route';update();
 }
 function size(){
 const r=map.getBoundingClientRect();w=Math.max(1,r.width);h=Math.max(1,r.height);dpr=Math.min(window.devicePixelRatio||1,2);
@@ -184,7 +231,26 @@ ctx.strokeStyle='rgba(187,212,190,'+(.12*(1-dist/(Math.max(w,h))))+')';
 ctx.lineWidth=.75;ctx.setLineDash([2,7]);ctx.stroke();ctx.setLineDash([]);
 }
 }
-islands.forEach((v,i)=>surface(v.x*w,v.y*h,radius,v.seed,i===selected,time));
+if(mode==='route'&&route.length>1){
+ctx.save();ctx.lineWidth=2;ctx.setLineDash([5,7]);
+for(let step=0;step<route.length;step++){
+const a=islands[route[step]],b=islands[route[(step+1)%route.length]];
+if(!a||!b)continue;
+const startX=a.x*w,startY=a.y*h,endX=b.x*w,endY=b.y*h;
+const curveX=(startX+endX)/2,curveY=(startY+endY)/2-20;
+ctx.beginPath();ctx.moveTo(startX,startY);ctx.quadraticCurveTo(curveX,curveY,endX,endY);
+ctx.strokeStyle=step===routeStep?'rgba(255,213,158,.95)':'rgba(222,186,132,.19)';
+ctx.stroke();
+}
+ctx.setLineDash([]);ctx.restore();
+}
+if(mode==='sea'&&between&&islands[between[0]]&&islands[between[1]]){
+const a=islands[between[0]],b=islands[between[1]];
+ctx.save();ctx.strokeStyle='#e7b990';ctx.lineWidth=1.9;ctx.setLineDash([3,6]);
+ctx.beginPath();ctx.moveTo(a.x*w,a.y*h);ctx.lineTo(b.x*w,b.y*h);ctx.stroke();
+ctx.setLineDash([]);ctx.restore();
+}
+islands.forEach((v,i)=>surface(v.x*w,v.y*h,radius,v.seed,i===selected||(mode==='route'&&route[routeStep]===i),time));
 const t=time||0;
 flashes=flashes.filter(f=>t-f.t<850);
 flashes.forEach(f=>{const p=(t-f.t)/850;ctx.strokeStyle='rgba(231,185,144,'+(1-p)*.5+')';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(f.x,f.y,5+p*20,0,Math.PI*2);ctx.stroke();});
@@ -211,10 +277,10 @@ let hit=-1,dmin=1e9;islands.forEach((v,i)=>{const d=Math.hypot(v.x*w-x,v.y*h-y);
 }
 function make(x,y){
 if(islands.length>=MAX){notify('この地図はもう十分に広がった。');return;}
-if(nearest(x,y)>=0){selected=nearest(x,y);update();return;}
+if(nearest(x,y)>=0){selected=nearest(x,y);mode='island';update();return;}
 const n=nextPhrase();const seed=(Math.floor(Math.random()*100000)+islands.length*117)|0;
 islands.push({x:clamp(x/w,.07,.93),y:clamp(y/h,.12,.88),seed,n});
-selected=islands.length-1;save();update();notify('地図に、新しい場所ができた。');
+selected=islands.length-1;mode='island';route=[];save();update();notify(islands.length===MAX?'14の島がそろった。最後の航路を読めます。':islands.length===3?'航路が開きました。海にも触ってみる。':'地図に、新しい場所ができた。');
 }
 function addAutomatic(){
 if(islands.length>=MAX){notify('地図が完成しました。');return;}
@@ -231,8 +297,8 @@ canvas.addEventListener('pointerdown',e=>{
 if(e.button!==0)return;
 const p=locate(e);pointer=p;
 const hit=nearest(p.x,p.y);
-if(hit>=0){selected=hit;update();return;}
-if(islands.length>=MAX){notify('地図が完成しました。');return;}
+if(hit>=0){selected=hit;mode='island';update();return;}
+if(islands.length>=MAX){if(islands.length>=2)readSea(p.x,p.y);return;}
 hold={...p,time:performance.now(),id:e.pointerId};
 try{canvas.setPointerCapture(e.pointerId);}catch(err){}
 });
@@ -240,15 +306,16 @@ canvas.addEventListener('pointermove',e=>{
 pointer=locate(e);
 if(hold&&Math.hypot(pointer.x-hold.x,pointer.y-hold.y)>18)hold=null;
 });
-function finish(e){if(hold){const p=locate(e);if(performance.now()-hold.time<HOLD)flashes.push({...p,t:performance.now()});hold=null;}}
+function finish(e){if(hold){const p=locate(e);if(performance.now()-hold.time<HOLD){flashes.push({...p,t:performance.now()});if(Math.hypot(p.x-hold.x,p.y-hold.y)<18)readSea(p.x,p.y);}hold=null;}}
 canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',()=>hold=null);
 canvas.addEventListener('pointerleave',()=>{if(!hold)pointer={x:-200,y:-200};});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 document.getElementById('add').addEventListener('click',addAutomatic);
+routeButton.addEventListener('click',nextRoute);
 document.getElementById('reset').addEventListener('click',()=>{
 if(!islands.length)return;
 if(!window.confirm('このブラウザに保存された地図を消去しますか？'))return;
-islands=[];selected=-1;save();update();notify('地図を白紙にしました。');
+islands=[];selected=-1;mode='island';between=null;route=[];routeStep=0;save();update();notify('地図を白紙にしました。');
 });
 document.getElementById('export').addEventListener('click',()=>{
 try{const link=document.createElement('a');link.download='almost-field-map.png';link.href=canvas.toDataURL('image/png');document.body.append(link);link.click();link.remove();notify('地図をPNGで保存しました。');}
