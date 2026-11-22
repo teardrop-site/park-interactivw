@@ -1,0 +1,78 @@
+name: Restore and publish DREAM KEEP DREAMIN'
+
+on:
+  push:
+    paths:
+      - "city-archive/**"
+      - "city-source/**"
+      - ".github/workflows/build-city.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-city
+  cancel-in-progress: false
+
+jobs:
+  build-city:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PARK
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: city-source/package-lock.json
+
+      - name: Restore the original source (one time)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f city-source/src/main.ts ]; then
+            mkdir -p city-source
+            base64 --decode city-archive/source.tar.xz.b64 > /tmp/city-source.tar.xz
+            echo "1ac9a94f3c3b81794009e1856013aad70b086dba748a920cf25a9a33f0a0254f  /tmp/city-source.tar.xz" | sha256sum --check
+            tar -xJf /tmp/city-source.tar.xz -C city-source
+          fi
+          test -f city-source/src/main.ts
+          test -f city-source/src/style.css
+
+      - name: Prepare isolated build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .city-build
+          cp -a city-source/. .city-build/
+          # The original source is left unchanged. Vite's base flag adjusts
+          # resource URLs exclusively for this GitHub Pages copy.
+
+      - name: Install dependencies and build for GitHub Pages
+        working-directory: .city-build
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          npm run build -- --base=/park-interactivw/city/
+
+      - name: Publish self-contained /city/ copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf city
+          mkdir -p city
+          cp -a .city-build/dist/. city/
+          touch .nojekyll
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add city city-source .nojekyll
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit'
+            exit 0
+          fi
+          git commit -m "Publish original DREAM KEEP DREAMIN' as PARK city"
+          git push origin HEAD:main
