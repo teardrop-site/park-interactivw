@@ -26,8 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: city-source/package-lock.json
 
       - name: Restore the original source (one time)
         shell: bash
