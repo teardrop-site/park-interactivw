@@ -1,0 +1,16 @@
+{
+  "project": "PARK",
+  "works": [
+    {
+      "id": "orbit",
+      "original": "https://dream.stilloperable.studio/",
+      "sourceImported": false
+    },
+    {
+      "id": "the-unwritten",
+      "original": "https://dream.stilloperable.studio/the-unwritten/",
+      "sourceImported": false
+    }
+  ],
+  "migrationStatus": "awaiting-original-source"
+}
