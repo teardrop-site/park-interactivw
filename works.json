@@ -19,10 +19,14 @@
       "sourceImported": false
     },
     {
-      "id": "the-city",
-      "title": "THE CITY",
-      "sourceImported": false,
-      "status": "not-yet-published"
+      "id": "dream-keep-dreamin",
+      "title": "DREAM KEEP DREAMIN'",
+      "section": "THE CITY",
+      "sourcePath": "city-source/",
+      "publishedPath": "city/",
+      "publishedUrl": "https://teardrop-site.github.io/park-interactivw/city/",
+      "sourceImported": true,
+      "build": "Vite 8 + TypeScript + Three.js"
     }
   ],
   "originalHostModified": false
