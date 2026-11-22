@@ -27,6 +27,19 @@
       "publishedUrl": "https://teardrop-site.github.io/park-interactivw/city/",
       "sourceImported": true,
       "build": "Vite 8 + TypeScript + Three.js"
+    },
+    {
+      "id": "almost",
+      "title": "ALMOST",
+      "subtitle": "ためらいの地図",
+      "publishedPath": "almost/",
+      "publishedUrl": "https://teardrop-site.github.io/park-interactivw/almost/",
+      "sourcePath": "almost/index.html",
+      "published": true,
+      "build": "HTML Canvas / vanilla JavaScript",
+      "interaction": "press and hold to create topographic islands; local-only save and PNG export",
+      "sourceImported": false,
+      "authoring": "original PARK work"
     }
   ],
   "originalHostModified": false
