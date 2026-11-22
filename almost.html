@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1b1b">
+<meta name="description" content="ためらっていた時間が、地形になる。画面に触れたまま待つと、どこにも行かなかった場所が地図に残る。PARK / stilloperable のインタラクティブ作品。">
+<title>ALMOST / ためらいの地図 — PARK</title>
+<style>
+:root{color-scheme:dark;--ground:#0a1b1b;--cream:#e8e2d5;--muted:#a8aaa0;--mint:#b5d2bd;--gold:#e7b990;--line:#a4b9ae41}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--ground);color:var(--cream)}
+body{font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;overflow:hidden}
+button,a{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+a{color:inherit;text-decoration:none}
+.app{height:100dvh;min-height:540px;display:grid;grid-template-rows:auto minmax(160px,1fr) auto;position:relative;isolation:isolate;overflow:hidden}
+.app:before{position:absolute;content:"";inset:0;background:radial-gradient(ellipse at 54% 46%,#1b393a80 0%,transparent 63%),linear-gradient(125deg,#071515 0%,#0e2524 75%,#081618 100%);z-index:-1}
+header{padding:clamp(20px,3vw,45px);display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;z-index:2}
+.overline{font-size:10px;line-height:1.6;letter-spacing:.19em;color:var(--mint);font-weight:600}
+.title{font-family:Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:-.073em;font-size:clamp(55px,8.6vw,122px);line-height:.85;margin:14px 0 5px}
+.title em{font-style:italic;color:var(--gold)}
+.subtitle{font-size:clamp(12px,1.4vw,16px);letter-spacing:.16em;margin-top:18px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:21px}
+.exit{font-size:10px;letter-spacing:.2em;white-space:nowrap;border-bottom:1px solid #6b8a7d;padding-bottom:8px}
+.counter{font-family:Georgia,serif;font-size:36px;font-variant-numeric:tabular-nums;letter-spacing:-.055em;line-height:1}
+.counter span{font-size:10px;font-family:Arial,sans-serif;letter-spacing:.17em;color:var(--muted)}
+.map-space{position:relative;min-height:0;margin:0 clamp(10px,2.1vw,36px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.map-space:before,.map-space:after{content:"";position:absolute;z-index:1;width:18px;height:18px;pointer-events:none;border-color:var(--mint);opacity:.48}
+.map-space:before{top:9px;left:9px;border-left:1px solid;border-top:1px solid}
+.map-space:after{right:9px;bottom:9px;border-right:1px solid;border-bottom:1px solid}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.map-mark{position:absolute;top:18px;right:22px;font-size:9px;letter-spacing:.19em;color:#9cae9f;pointer-events:none;text-align:right;line-height:1.9}
+.map-help{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;text-align:center;transition:opacity .4s;max-width:90%;width:340px}
+.map-help strong{display:block;font-family:Georgia,serif;letter-spacing:-.06em;font-size:clamp(28px,5vw,55px);font-weight:400}
+.map-help span{display:block;margin-top:12px;font-size:12px;letter-spacing:.09em;color:#c2cac0;line-height:2}
+.map-help.hide{opacity:0}
+.bottom{display:grid;grid-template-columns:minmax(190px,1.1fr) minmax(240px,1.45fr) auto;align-items:end;gap:clamp(18px,3vw,48px);padding:clamp(20px,3vw,44px)}
+.instructions small,.entry small{font-size:9px;letter-spacing:.22em;color:var(--mint);display:block;margin-bottom:10px}
+.instructions p{font-size:12px;line-height:1.95;color:var(--muted);margin:0}
+.entry{border-left:1px solid #6684788b;padding-left:clamp(18px,2vw,34px);min-height:88px}
+.entry h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(23px,2.45vw,38px);font-weight:400;line-height:1.3;letter-spacing:-.045em;margin:0 0 10px}
+.entry p{font-size:12px;line-height:1.85;color:#b8c6b8;margin:0;max-width:440px}
+.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;align-items:center;max-width:270px}
+.controls button{background:none;border:1px solid #7d9b8a92;color:var(--cream);padding:12px 15px;font-size:10px;letter-spacing:.12em;white-space:nowrap;transition:background .25s,color .25s}
+.controls button:hover{background:var(--cream);color:var(--ground)}
+.controls .create{background:var(--mint);color:var(--ground);border-color:var(--mint);font-weight:700}
+.controls .create:hover{background:var(--gold);border-color:var(--gold)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);padding:12px 18px;border:1px solid #718c7b;background:#15312ef0;color:#efe9db;font-size:12px;letter-spacing:.08em;pointer-events:none;opacity:0;transition:opacity .3s,transform .3s;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:920px){.bottom{grid-template-columns:1fr 1.4fr}.controls{grid-column:1/-1;justify-content:flex-start;max-width:none}.map-space{min-height:180px}}
+@media(max-width:600px){.app{min-height:560px}.title{font-size:clamp(59px,15vw,86px);margin-top:10px}.subtitle{font-size:11px;margin-top:14px}.header-right{gap:16px}.counter{font-size:29px}header{padding:22px 19px 19px}.bottom{padding:14px 19px calc(14px + env(safe-area-inset-bottom));gap:13px;grid-template-columns:1fr}.instructions{display:none}.entry{padding-left:15px;min-height:70px}.entry h2{font-size:23px;margin-bottom:4px}.entry p{font-size:11px;line-height:1.6}.entry small{margin-bottom:4px}.controls{grid-column:auto;justify-content:space-between;gap:5px}.controls button{padding:11px 9px;font-size:9px;flex:1}.controls .create{flex:1.3}.map-mark{font-size:8px}.map-help span{font-size:11px}.map-help strong{font-size:32px}}
+@media(max-height:720px) and (min-width:700px){.title{font-size:80px}header{padding-block:20px}.bottom{padding-block:18px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+<div>
+<div class="overline">PARK / EXPERIMENT 004<br>STILLOPERABLE FIELD OFFICE</div>
+<h1 class="title">ALM<em>O</em>ST.</h1>
+<div class="subtitle">ためらいの地図</div>
+</div>
+<div class="header-right">
+<a class="exit" href="./" aria-label="PARKの作品一覧に戻る">← RETURN TO PARK</a>
+<div class="counter" aria-live="polite"><strong id="count">00</strong><span> / 14 ISLANDS</span></div>
+</div>
+</header>
+<section class="map-space" aria-label="ためらいの地図。画面を長押しすると島ができます">
+<canvas id="map" aria-label="インタラクティブな地図。長押し、または下の島をつくるボタンで操作できます"></canvas>
+<div class="map-mark">UNRECORDED TERRITORIES<br>34° 18′ / 138° 00′<br>NO FIXED SCALE</div>
+<div class="map-help" id="help"><strong>Nothing here yet.</strong><span>画面のどこかで、0.8秒だけ立ち止まる。<br>その場所が地図になる。</span></div>
+</section>
+<footer class="bottom">
+<div class="instructions"><small>HOW TO MAKE LAND</small><p>クリック・タッチしたまま0.8秒。<br>現れた島に触れると記録を読めます。<br>ここで生まれる地図は、この端末にだけ残ります。</p></div>
+<article class="entry" aria-live="polite"><small id="record">FIELD NOTE / 000</small><h2 id="entryTitle">まだどこにも行っていない。</h2><p id="entryBody">移動して、止まる。何もしない時間が長くなるほど、地形が生まれていく。</p></article>
+<div class="controls"><button type="button" class="create" id="add">＋ 島をつくる</button><button type="button" id="export">地図を保存</button><button type="button" id="reset">消去</button></div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+</main>
+<script>
+(()=>{
+'use strict';
+const KEY='park-almost-field-v1';
+const MAX=14, HOLD=800;
+const phrases=[
+['二行目まで書いたメッセージ','送る前に読み直したら、最初の一行だけで十分な気がした。結局、その一行も送っていない。'],
+['調べただけの深夜バス','出発時刻と到着時刻は覚えている。行き先の天気までは調べなかった。'],
+['四駅手前のホーム','降りようと思えば降りられた。ドアが閉まると、理由だけがあとに残った。'],
+['試着室の一枚','買わなかった服の写真が、いまも写真フォルダにある。'],
+['送信しなかった応募フォーム','名前まで入れていた。最後のボタンが押せなかった理由は、もう思い出せない。'],
+['閉じなかったブラウザのタブ','いつ開いたのか不明。いつか読むつもりのものは、なかなか古くならない。'],
+['別の出口へ続く階段','いつもと逆の出口に出る。それだけで知らない街になったはずだった。'],
+['一度しか鳴らなかった電話','画面を見ているあいだに呼び出しが終わった。かけ直すには早すぎる気がした。'],
+['五分早く出た朝','時間が余ったので遠回りできた。遠回りしないで待った。'],
+['削除しなかった下書き','完成していないことと、残しておきたいことは、同じではなかった。'],
+['言い直さなかった言葉','帰り道に何度も言い方を直した。いちばんいい言い方は、誰にも届いていない。'],
+['行かなかった駅の改札','料金だけ確かめて戻った。地図には、そこへ向かう線が一本も残っていない。'],
+['もう一回だけ聴いたイントロ','続きを知っている曲なのに、最初の数秒を繰り返した。'],
+['次の予定を入れなかった日','一日が空いた。その空白を、誰の予定でも埋めないままにした。']
+];
+const canvas=document.getElementById('map'),ctx=canvas.getContext('2d',{alpha:false});
+const map=canvas.parentElement,help=document.getElementById('help');
+const count=document.getElementById('count'),record=document.getElementById('record');
+const title=document.getElementById('entryTitle'),body=document.getElementById('entryBody'),toast=document.getElementById('toast');
+let islands=[],selected=-1,w=1,h=1,dpr=1,hold=null,pointer={x:-200,y:-200},flashes=[];
+let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let toastHandle=0,raf=0;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function read(){
+try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))islands=raw.slice(0,MAX).filter(v=>Number.isFinite(v.x)&&Number.isFinite(v.y)&&Number.isInteger(v.n)&&v.n>=0&&v.n<MAX).map(v=>({x:clamp(v.x,.05,.95),y:clamp(v.y,.05,.95),n:v.n,seed:Number.isFinite(v.seed)?v.seed:1}));}
+catch(e){islands=[];}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(islands));}catch(e){}}
+function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastHandle);toastHandle=setTimeout(()=>toast.classList.remove('show'),2300);}
+function update(){
+count.textContent=String(islands.length).padStart(2,'0');
+help.classList.toggle('hide',islands.length>0);
+if(selected<0||!islands[selected]){
+record.textContent='FIELD NOTE / 000';
+title.textContent=islands.length?'地図の中に、まだ続きがある。':'まだどこにも行っていない。';
+body.textContent=islands.length?'島を選んで記録を読む。別の場所で立ち止まれば、土地が増えていく。':'移動して、止まる。何もしない時間が長くなるほど、地形が生まれていく。';
+}else{
+const v=islands[selected],p=phrases[v.n];
+record.textContent='FIELD NOTE / '+String(selected+1).padStart(3,'0');
+title.textContent=p[0];body.textContent=p[1];
+}
+document.getElementById('add').disabled=islands.length>=MAX;
+document.getElementById('add').textContent=islands.length>=MAX?'MAP COMPLETE':'＋ 島をつくる';
+}
+function size(){
+const r=map.getBoundingClientRect();w=Math.max(1,r.width);h=Math.max(1,r.height);dpr=Math.min(window.devicePixelRatio||1,2);
+canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);draw(performance.now());
+}
+function noise(seed,a){return Math.sin(a*3+seed*1.7)*.092+Math.sin(a*5-seed*.79)*.062+Math.cos(a*9+seed*.44)*.034+Math.sin(a*14+seed*2)*.016}
+function coastline(x,y,r,seed,layer){
+const rr=r*layer;ctx.beginPath();
+for(let i=0;i<=120;i++){const a=i/120*Math.PI*2;
+const rad=rr*(1+noise(seed,a));const px=x+Math.cos(a)*rad,py=y+Math.sin(a)*rad;
+if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+ctx.closePath();
+}
+function surface(x,y,r,seed,isActive,time){
+ctx.save();
+const glow=ctx.createRadialGradient(x,y,0,x,y,r*2.65);
+glow.addColorStop(0,isActive?'rgba(219,192,154,.20)':'rgba(184,210,190,.10)');
+glow.addColorStop(1,'rgba(184,210,190,0)');
+ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y,r*2.65,0,Math.PI*2);ctx.fill();
+for(let k=7;k>=0;k--){
+const mult=.68+k*.16;coastline(x,y,r,seed+k*.09,mult);
+if(k===0){ctx.fillStyle=isActive?'#a5baa4':'#789f91';ctx.globalAlpha=.40;ctx.fill();ctx.globalAlpha=1;}
+ctx.strokeStyle=k===0?'rgba(231,196,149,.93)':'rgba(185,207,182,'+(.10+(7-k)*.066)+')';
+ctx.lineWidth=k===0?1.4:.7;ctx.stroke();
+}
+ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fillStyle='#edd0ae';ctx.fill();
+ctx.font='10px Arial, sans-serif';ctx.letterSpacing='1.2px';ctx.textAlign='center';ctx.fillStyle='#eadfca';
+ctx.fillText(String(seed%100|0).padStart(2,'0'),x,y-r*1.48-8);
+ctx.restore();
+}
+function grid(){
+ctx.fillStyle='#091c1c';ctx.fillRect(0,0,w,h);
+const step=Math.max(35,Math.min(w,h)/9);
+ctx.lineWidth=.5;
+for(let x=step*.6;x<w;x+=step){ctx.strokeStyle='rgba(147,174,158,.095)';ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+for(let y=step*.55;y<h;y+=step){ctx.strokeStyle='rgba(147,174,158,.095)';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+ctx.fillStyle='rgba(181,209,184,.22)';
+for(let yy=step*.55;yy<h;yy+=step)for(let xx=step*.6;xx<w;xx+=step){ctx.fillRect(xx-1,yy-1,2,2);}
+ctx.fillStyle='rgba(180,196,175,.43)';ctx.font='9px Arial';ctx.textAlign='left';
+ctx.fillText('N',18,27);ctx.fillText('S',18,h-19);
+ctx.strokeStyle='rgba(188,209,191,.37)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(19,36);ctx.lineTo(19,65);ctx.moveTo(14,44);ctx.lineTo(19,36);ctx.lineTo(24,44);ctx.stroke();
+}
+function draw(time){
+ctx.setTransform(dpr,0,0,dpr,0,0);grid();
+const radius=Math.min(46,Math.max(24,Math.min(w,h)*.071));
+for(let i=0;i<islands.length;i++)for(let j=i+1;j<islands.length;j++){
+const a=islands[i],b=islands[j];const ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
+const dist=Math.hypot(ax-bx,ay-by);
+if(dist<Math.min(w,h)*.67){
+ctx.beginPath();ctx.moveTo(ax,ay);ctx.quadraticCurveTo((ax+bx)/2,(ay+by)/2-15,bx,by);
+ctx.strokeStyle='rgba(187,212,190,'+(.12*(1-dist/(Math.max(w,h))))+')';
+ctx.lineWidth=.75;ctx.setLineDash([2,7]);ctx.stroke();ctx.setLineDash([]);
+}
+}
+islands.forEach((v,i)=>surface(v.x*w,v.y*h,radius,v.seed,i===selected,time));
+const t=time||0;
+flashes=flashes.filter(f=>t-f.t<850);
+flashes.forEach(f=>{const p=(t-f.t)/850;ctx.strokeStyle='rgba(231,185,144,'+(1-p)*.5+')';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(f.x,f.y,5+p*20,0,Math.PI*2);ctx.stroke();});
+if(hold){
+const progress=clamp((t-hold.time)/HOLD,0,1);const x=hold.x,y=hold.y;
+ctx.strokeStyle='#e5c4a2';ctx.lineWidth=2.2;
+ctx.beginPath();ctx.arc(x,y,23,-Math.PI/2,-Math.PI/2+progress*Math.PI*2);ctx.stroke();
+ctx.fillStyle='#e5c4a2';ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+if(progress>=1){const target=hold;hold=null;make(target.x,target.y);}
+}else if(pointer.x>=0&&pointer.x<w&&pointer.y>=0&&pointer.y<h&&!reduced){
+ctx.strokeStyle='rgba(196,216,196,.42)';ctx.lineWidth=.65;
+ctx.beginPath();ctx.moveTo(pointer.x-7,pointer.y);ctx.lineTo(pointer.x+7,pointer.y);ctx.moveTo(pointer.x,pointer.y-7);ctx.lineTo(pointer.x,pointer.y+7);ctx.stroke();
+}
+ctx.fillStyle='rgba(174,196,173,.35)';ctx.font='9px Arial';ctx.textAlign='right';
+ctx.fillText('ALMOST / FIELD MAP',w-19,h-16);
+}
+function frame(t){draw(t);raf=requestAnimationFrame(frame);}
+function nextPhrase(){
+const used=new Set(islands.map(v=>v.n));for(let n=0;n<phrases.length;n++)if(!used.has(n))return n;return 0;
+}
+function nearest(x,y){
+const radius=Math.min(46,Math.max(24,Math.min(w,h)*.071));
+let hit=-1,dmin=1e9;islands.forEach((v,i)=>{const d=Math.hypot(v.x*w-x,v.y*h-y);if(d<radius*1.15&&d<dmin){hit=i;dmin=d;}});return hit;
+}
+function make(x,y){
+if(islands.length>=MAX){notify('この地図はもう十分に広がった。');return;}
+if(nearest(x,y)>=0){selected=nearest(x,y);update();return;}
+const n=nextPhrase();const seed=(Math.floor(Math.random()*100000)+islands.length*117)|0;
+islands.push({x:clamp(x/w,.07,.93),y:clamp(y/h,.12,.88),seed,n});
+selected=islands.length-1;save();update();notify('地図に、新しい場所ができた。');
+}
+function addAutomatic(){
+if(islands.length>=MAX){notify('地図が完成しました。');return;}
+let best={x:w*.5,y:h*.5,score:-Infinity};
+for(let i=0;i<45;i++){
+const x=w*(.13+Math.random()*.74),y=h*(.19+Math.random()*.63);
+const dist=islands.length?Math.min(...islands.map(v=>Math.hypot(v.x*w-x,v.y*h-y))):Math.min(w,h)*.5;
+if(dist>best.score)best={x,y,score:dist};
+}
+make(best.x,best.y);
+}
+function locate(e){const rect=canvas.getBoundingClientRect();return{x:e.clientX-rect.left,y:e.clientY-rect.top};}
+canvas.addEventListener('pointerdown',e=>{
+if(e.button!==0)return;
+const p=locate(e);pointer=p;
+const hit=nearest(p.x,p.y);
+if(hit>=0){selected=hit;update();return;}
+if(islands.length>=MAX){notify('地図が完成しました。');return;}
+hold={...p,time:performance.now(),id:e.pointerId};
+try{canvas.setPointerCapture(e.pointerId);}catch(err){}
+});
+canvas.addEventListener('pointermove',e=>{
+pointer=locate(e);
+if(hold&&Math.hypot(pointer.x-hold.x,pointer.y-hold.y)>18)hold=null;
+});
+function finish(e){if(hold){const p=locate(e);if(performance.now()-hold.time<HOLD)flashes.push({...p,t:performance.now()});hold=null;}}
+canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',()=>hold=null);
+canvas.addEventListener('pointerleave',()=>{if(!hold)pointer={x:-200,y:-200};});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+document.getElementById('add').addEventListener('click',addAutomatic);
+document.getElementById('reset').addEventListener('click',()=>{
+if(!islands.length)return;
+if(!window.confirm('このブラウザに保存された地図を消去しますか？'))return;
+islands=[];selected=-1;save();update();notify('地図を白紙にしました。');
+});
+document.getElementById('export').addEventListener('click',()=>{
+try{const link=document.createElement('a');link.download='almost-field-map.png';link.href=canvas.toDataURL('image/png');document.body.append(link);link.click();link.remove();notify('地図をPNGで保存しました。');}
+catch(err){notify('保存できませんでした。');}
+});
+window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='n'&&!e.repeat&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!(e.target instanceof HTMLInputElement))addAutomatic();});
+window.addEventListener('resize',size,{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;hold=null;}else if(!raf){raf=requestAnimationFrame(frame);}});
+read();update();size();raf=requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
