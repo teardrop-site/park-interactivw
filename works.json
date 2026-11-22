@@ -32,14 +32,15 @@
       "id": "almost",
       "title": "ALMOST",
       "subtitle": "ためらいの地図",
-      "publishedPath": "almost/",
-      "publishedUrl": "https://teardrop-site.github.io/park-interactivw/almost/",
+      "publishedPath": "almost.html",
+      "publishedUrl": "https://teardrop-site.github.io/park-interactivw/almost.html",
       "sourcePath": "almost/index.html",
       "published": true,
       "build": "HTML Canvas / vanilla JavaScript",
       "interaction": "press and hold to create topographic islands; local-only save and PNG export",
       "sourceImported": false,
-      "authoring": "original PARK work"
+      "authoring": "original PARK work",
+      "alternatePath": "almost/"
     }
   ],
   "originalHostModified": false
