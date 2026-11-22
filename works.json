@@ -1,16 +1,29 @@
 {
   "project": "PARK",
+  "index": "https://teardrop-site.github.io/park-interactivw/",
   "works": [
     {
       "id": "orbit",
-      "original": "https://dream.stilloperable.studio/",
-      "sourceImported": false
+      "title": "ORBIT",
+      "sourcePath": "orbit-source/",
+      "publishedPath": "orbit/",
+      "publishedUrl": "https://teardrop-site.github.io/park-interactivw/orbit/",
+      "originalUrl": "https://dream.stilloperable.studio/",
+      "sourceImported": true,
+      "build": "Astro 7 + React + React Three Fiber + Three.js"
     },
     {
       "id": "the-unwritten",
-      "original": "https://dream.stilloperable.studio/the-unwritten/",
+      "title": "THE UNWRITTEN",
+      "originalUrl": "https://dream.stilloperable.studio/the-unwritten/",
       "sourceImported": false
+    },
+    {
+      "id": "the-city",
+      "title": "THE CITY",
+      "sourceImported": false,
+      "status": "not-yet-published"
     }
   ],
-  "migrationStatus": "awaiting-original-source"
+  "originalHostModified": false
 }
